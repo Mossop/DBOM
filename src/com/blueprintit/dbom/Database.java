@@ -1,7 +1,10 @@
 package com.blueprintit.dbom;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -17,12 +20,13 @@ import javax.servlet.ServletRequest;
 public class Database implements Map
 {
 	private ServletRequest request;
-	private Map tables;
+	private Map publicTables;
 	
 	Database(DatabasePrototype prototype, ServletRequest request)
 	{
 		this.request=request;
-		tables = new HashMap();
+		Map tables = new HashMap();
+		publicTables = Collections.unmodifiableMap(tables);
 		Iterator loop = prototype.getTablePrototypes().values().iterator();
 		while (loop.hasNext())
 		{
@@ -33,7 +37,7 @@ public class Database implements Map
 	
 	public Table getTable(String name)
 	{
-		return (Table)tables.get(name);
+		return (Table)publicTables.get(name);
 	}
 	
 	ServletRequest getRequest()
@@ -48,8 +52,7 @@ public class Database implements Map
 	 */
 	public void clear()
 	{
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException();
 	}
 
 	/*
@@ -57,9 +60,12 @@ public class Database implements Map
 	 * 
 	 * @see java.util.Map#containsKey(java.lang.Object)
 	 */
-	public boolean containsKey(Object arg0)
+	public boolean containsKey(Object key)
 	{
-		// TODO Auto-generated method stub
+		if (key.equals("tables"))
+		{
+			return true;
+		}
 		return false;
 	}
 
@@ -68,9 +74,12 @@ public class Database implements Map
 	 * 
 	 * @see java.util.Map#containsValue(java.lang.Object)
 	 */
-	public boolean containsValue(Object arg0)
+	public boolean containsValue(Object value)
 	{
-		// TODO Auto-generated method stub
+		if (value==publicTables)
+		{
+			return true;
+		}
 		return false;
 	}
 
@@ -81,8 +90,9 @@ public class Database implements Map
 	 */
 	public Set entrySet()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		Set set = new HashSet();
+		set.add(new MapEntry("tables",publicTables));
+		return set;
 	}
 
 	/*
@@ -90,9 +100,12 @@ public class Database implements Map
 	 * 
 	 * @see java.util.Map#get(java.lang.Object)
 	 */
-	public Object get(Object arg0)
+	public Object get(Object key)
 	{
-		// TODO Auto-generated method stub
+		if (key.equals("tables"))
+		{
+			return publicTables;
+		}
 		return null;
 	}
 
@@ -103,7 +116,6 @@ public class Database implements Map
 	 */
 	public boolean isEmpty()
 	{
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -114,8 +126,9 @@ public class Database implements Map
 	 */
 	public Set keySet()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		Set set = new HashSet();
+		set.add("tables");
+		return set;
 	}
 
 	/*
@@ -123,10 +136,9 @@ public class Database implements Map
 	 * 
 	 * @see java.util.Map#put(java.lang.Object, java.lang.Object)
 	 */
-	public Object put(Object arg0, Object arg1)
+	public Object put(Object key, Object value)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	/*
@@ -134,10 +146,9 @@ public class Database implements Map
 	 * 
 	 * @see java.util.Map#putAll(java.util.Map)
 	 */
-	public void putAll(Map arg0)
+	public void putAll(Map map)
 	{
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException();
 	}
 
 	/*
@@ -145,10 +156,9 @@ public class Database implements Map
 	 * 
 	 * @see java.util.Map#remove(java.lang.Object)
 	 */
-	public Object remove(Object arg0)
+	public Object remove(Object key)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	/*
@@ -158,8 +168,7 @@ public class Database implements Map
 	 */
 	public int size()
 	{
-		// TODO Auto-generated method stub
-		return 0;
+		return 1;
 	}
 
 	/*
@@ -169,7 +178,8 @@ public class Database implements Map
 	 */
 	public Collection values()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList list = new ArrayList();
+		list.add(publicTables);
+		return list;
 	}
 }
