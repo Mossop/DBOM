@@ -1,5 +1,7 @@
 package com.blueprintit.dbom.query;
 
+import com.blueprintit.dbom.Field;
+
 /**
  * @author Dave
  */
@@ -20,6 +22,11 @@ public class ObjectValue implements Value
 		if (value instanceof String)
 		{
 			return StringValue.escape(value.toString());
+		}
+		else if (value instanceof Field)
+		{
+			Field field = (Field)value;
+			return field.getTableName()+"."+field.getFieldName();
 		}
 		else
 		{

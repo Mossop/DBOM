@@ -11,6 +11,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import com.blueprintit.dbom.query.AndRestrictionSet;
+import com.blueprintit.dbom.query.EqualsRestriction;
+import com.blueprintit.dbom.query.FieldValue;
+import com.blueprintit.dbom.query.ObjectValue;
 import com.blueprintit.dbom.query.Query;
 
 /**
@@ -89,15 +93,7 @@ public class RecordSet implements Map
 	{
 		if (!retrieved)
 		{
-			Iterator loop = records.entrySet().iterator();
-			while (loop.hasNext())
-			{
-				Map.Entry entry = (Map.Entry)loop.next();
-				if (entry.getValue()==null)
-				{
-					loop.remove();
-				}
-			}
+			records.clear();
 			try
 			{
 				System.out.println("Executing query: "+query.getSQL());
@@ -131,6 +127,29 @@ public class RecordSet implements Map
 	}
 
 	/**
+	 * Checks the cache for the requested record the nattempts to retrieve it if necessary to determine
+	 * if it exists in the database.
+	 * 
+	 * @param key The primary key of the record.
+	 * @return True if the record exists in the database.
+	 */
+	public boolean containsKey(Map key)
+	{
+		if (key!=null)
+		{
+			if (records.containsKey(key))
+			{
+				return !(records.get(key)==null);
+			}
+			else if (!retrieved)
+			{
+				return !(get(key)==null);
+			}
+		}
+		return false;
+	}
+	
+	/**
 	 * Attempts to determine if a particular record exists in the RecordSet.
 	 * 
 	 * @param okey The index of the record.
@@ -138,18 +157,7 @@ public class RecordSet implements Map
 	 */
 	public boolean containsKey(Object okey)
 	{
-		Map key = makeKey(okey);
-		if (key==null)
-			return false;
-		retrieveRecords();
-		if (records.containsKey(key))
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		return containsKey(makeKey(okey));
 	}
 
 	/**
@@ -174,17 +182,67 @@ public class RecordSet implements Map
 	}
 
 	/**
+	 * Attempts to retrieve an object from the cache if possible before going to the database.
+	 * 
+	 * @param key The key of the record to return
+	 * @return The record or null if it does not exist.
+	 */
+	public Record get(Map key)
+	{
+		if (key!=null)
+		{
+			if (records.containsKey(key))
+			{
+				return (Record)records.get(key);
+			}
+			else if (!retrieved)
+			{
+				AndRestrictionSet rest = new AndRestrictionSet();
+				Iterator loop = key.entrySet().iterator();
+				while (loop.hasNext())
+				{
+					Map.Entry entry = (Map.Entry)loop.next();
+					Field field = (Field)entry.getKey();
+					Object value = entry.getValue();
+					rest.addRestriction(new EqualsRestriction(new FieldValue(field),new ObjectValue(value)));
+				}
+				Query singlerec = query.getSubset(rest);
+				try
+				{
+					System.out.println("Executing query: "+singlerec.getSQL());
+					Statement stmt = singlerec.getDatabase().getConnection().createStatement();
+					ResultSet results = stmt.executeQuery(singlerec.getSQL());
+					ResultSetMetaData metadata = results.getMetaData();
+					if (results.next())
+					{
+						Record record = new Record(singlerec.getDatabase(),results,metadata);
+						records.put(record.getPrimaryKey(),record);
+						results.close();
+						stmt.close();
+						return record;
+					}
+					results.close();
+					stmt.close();
+					records.put(key,null);
+					return null;
+				}
+				catch (SQLException e)
+				{
+					e.printStackTrace();
+				}
+			}
+		}
+		return null;
+	}
+	
+	/**
 	 * (non-Javadoc)
 	 * 
 	 * @see java.util.Map#get(java.lang.Object)
 	 */
 	public Object get(Object okey)
 	{
-		Map key = makeKey(okey);
-		if (key==null)
-			return null;
-		retrieveRecords();
-		return records.get(key);
+		return get(makeKey(okey));
 	}
 
 	/**
