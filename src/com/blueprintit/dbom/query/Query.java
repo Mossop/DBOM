@@ -78,7 +78,7 @@ public class Query
 			result.append(restrictions.getSQL());
 		}
 		result.append(";");
-		System.out.println("Generated query: "+result);
+		//System.out.println("Generated query: "+result);
 		return result.toString();
 	}
 	

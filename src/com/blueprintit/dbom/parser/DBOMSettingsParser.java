@@ -165,7 +165,7 @@ public class DBOMSettingsParser
 	 */
 	private void parseDatabaseElementPass1(Element settings, Connection db, DatabasePrototype dbPrototype) throws Exception
 	{
-		System.out.println("Parsing database "+dbPrototype.getCatalog()+" - pass 1");
+		//System.out.println("Parsing database "+dbPrototype.getCatalog()+" - pass 1");
 		Iterator parserLoop = dbParsers.iterator();
 		while (parserLoop.hasNext())
 		{
@@ -210,7 +210,7 @@ public class DBOMSettingsParser
 	 */
 	private void parseDatabaseElementPass2(Element settings, Connection db, DatabasePrototype dbPrototype) throws Exception
 	{
-		System.out.println("Parsing database "+dbPrototype.getCatalog()+" - pass 2");
+		//System.out.println("Parsing database "+dbPrototype.getCatalog()+" - pass 2");
 		Iterator parserLoop = dbParsers.iterator();
 		while (parserLoop.hasNext())
 		{
@@ -253,7 +253,7 @@ public class DBOMSettingsParser
 	 */
 	private void parseTableElementPass1(Element settings, Connection db, TablePrototype tablePrototype) throws Exception
 	{
-		System.out.println("Parsing table "+tablePrototype.getName()+" - pass 1");
+		//System.out.println("Parsing table "+tablePrototype.getName()+" - pass 1");
 		Iterator parserLoop = tableParsers.iterator();
 		while (parserLoop.hasNext())
 		{
@@ -291,7 +291,7 @@ public class DBOMSettingsParser
 	 */
 	private void parseTableElementPass2(Element settings, Connection db, TablePrototype tablePrototype) throws Exception
 	{
-		System.out.println("Parsing table "+tablePrototype.getName()+" - pass 2");
+		//System.out.println("Parsing table "+tablePrototype.getName()+" - pass 2");
 		Iterator parserLoop = tableParsers.iterator();
 		while (parserLoop.hasNext())
 		{

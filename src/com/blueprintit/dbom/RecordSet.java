@@ -100,6 +100,7 @@ public class RecordSet implements Map
 			}
 			try
 			{
+				System.out.println("Executing query: "+query.getSQL());
 				Statement stmt = query.getDatabase().getConnection().createStatement();
 				ResultSet results = stmt.executeQuery(query.getSQL());
 				ResultSetMetaData metadata = results.getMetaData();
