@@ -36,7 +36,7 @@ public class RecordSet implements Map
 	/**
 	 * Converts the object into a compatible index for this RecordSet.
 	 * 
-	 * @param ojb The object used to attempt to index the RecordSet.
+	 * @param obj The object used to attempt to index the RecordSet.
 	 * @return The obj as converted to a primary key, or null if no conversion was possible.
 	 */
 	private Map makeKey(Object obj)

@@ -49,7 +49,7 @@ public interface ElementParser
 	 * 
 	 * @param element The element to be processed.
 	 * @param db A connection to the database.
-	 * @param dtablePrototype The table prototype to be updated.
+	 * @param tablePrototype The table prototype to be updated.
 	 * @return True if the element has been fully parsed or false if other plugins should be notified
 	 * of this element.
 	 */
@@ -60,7 +60,7 @@ public interface ElementParser
 	 * 
 	 * @param element The element to be processed.
 	 * @param db A connection to the database.
-	 * @param dtablePrototype The table prototype to be updated.
+	 * @param tablePrototype The table prototype to be updated.
 	 * @return True if the element has been fully parsed or false if other plugins should be notified
 	 * of this element.
 	 */
