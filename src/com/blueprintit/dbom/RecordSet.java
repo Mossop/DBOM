@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import com.blueprintit.dbom.query.Query;
+
 /**
  * @author Dave
  * 
@@ -33,6 +35,15 @@ public class RecordSet implements Map
 		retrieved=false;
 	}
 	
+	/**
+	 * @param query
+	 */
+	public RecordSet(Query query)
+	{
+		
+		// TODO Auto-generated constructor stub
+	}
+
 	/**
 	 * Converts the object into a compatible index for this RecordSet.
 	 * 
