@@ -65,7 +65,7 @@
 		<mkdir dir="${docsdir}"/>
 		<javadoc sourcepath="${sourcedir}" destdir="${docsdir}" private="true" use="true" author="true" version="true" windowtitle="${ant.project.name}" packagenames="com.*" additionalparam="-breakiterator -source 1.4">
 			<classpath refid="classpath"/>
-			<link href="http://java.sun.com/j2se/1.4.1/docs/api/"/>
+			<link href="http://java.sun.com/j2se/1.4.2/docs/api/"/>
 			<link href="http://jakarta.apache.org/tomcat/tomcat-5.0-doc/servletapi/"/>
 			<link href="http://jakarta.apache.org/tomcat/tomcat-5.0-doc/jspapi/"/>
 		</javadoc>
