@@ -96,6 +96,16 @@ public class TableRecord
 	}
 	
 	/**
+	 * Returns the table that this is a record from.
+	 * 
+	 * @return A table.
+	 */
+	public Table getTable()
+	{
+		return table;
+	}
+	
+	/**
 	 * Retrieve this record from the table cache.
 	 * 
 	 * @return A copy of this record that exists in the table cache.

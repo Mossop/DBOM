@@ -4,8 +4,12 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -18,11 +22,11 @@ import java.util.Set;
 public class Record implements Map
 {
 	/**
-	 * This field holds a map to the TableRecords, with a Table as the key.
+	 * This field holds a map to the TableRecords, with a table name as the key.
 	 */
 	private Map tableRecords;
 	/**
-	 * This maps from simple field name to a complex one (i.e. Table.Field)
+	 * This maps from simple field name to a TableRecord
 	 */
 	private Map fields;
 	
@@ -56,19 +60,20 @@ public class Record implements Map
 			Table tb = db.getTable(metadata.getTableName(loop));
 			if ((tb!=null)&&(!tableRecords.containsKey(tb)))
 			{
-				tableRecords.put(tb,(new TableRecord(tb,results,metadata)).intern());
-			}
-			Iterator fieldloop = tb.getFields().iterator();
-			while (fieldloop.hasNext())
-			{
-				Field f = (Field)fieldloop.next();
-				if (fields.containsKey(f.getFieldName()))
+				TableRecord rec = new TableRecord(tb,results,metadata);
+				tableRecords.put(tb.getName(),(new TableRecord(tb,results,metadata)).intern());
+				Iterator fieldloop = tb.getFields().iterator();
+				while (fieldloop.hasNext())
 				{
-					fields.put(f.getFieldName(),null);
-				}
-				else
-				{
-					fields.put(f.getFieldName(),f.getTableName()+"."+f.getFieldName());
+					Field f = (Field)fieldloop.next();
+					if (fields.containsKey(f.getFieldName()))
+					{
+						fields.put(f.getFieldName(),null);
+					}
+					else
+					{
+						fields.put(f.getFieldName(),rec);
+					}
 				}
 			}
 		}
@@ -91,6 +96,40 @@ public class Record implements Map
 	}
 	
 	/**
+	 * Tries to convert the given field name to a simple one, removing the table name as necessary.
+	 * 
+	 * @param name The name to convert
+	 * @return The simple field name.
+	 */
+	private String getFieldName(String name)
+	{
+		if (name.indexOf(".")>0)
+		{
+			return name.substring(name.indexOf(".")+1);
+		}
+		return name;
+	}
+	
+	/**
+	 * Retrieves a TableRecord for a given complex field name.
+	 * 
+	 * @param fieldname The field name
+	 * @return A TableRecord or null if one wasnt found.
+	 */
+	private TableRecord getTableRecord(String name)
+	{
+		if (name.indexOf(".")>0)
+		{
+			name=name.substring(0,name.indexOf("."));
+			return (TableRecord)tableRecords.get(name);
+		}
+		else
+		{
+			return (TableRecord)fields.get(name);
+		}
+	}
+	
+	/**
 	 * Attempts to clear the RecordSet. This will fail with an UnsupportedOperationException.
 	 * 
 	 * @see java.util.Map#clear()
@@ -107,7 +146,23 @@ public class Record implements Map
 	 */
 	public boolean containsKey(Object arg0)
 	{
-		// TODO Auto-generated method stub
+		if (arg0 instanceof Field)
+		{
+			TableRecord table = (TableRecord)tableRecords.get(((Field)arg0).getTableName());
+			if (table!=null)
+			{
+				return true;
+			}
+		}
+		else if (arg0 instanceof String)
+		{
+			String field = getFieldName((String)arg0);
+			TableRecord table = getTableRecord((String)arg0);
+			if (table!=null)
+			{
+				return (table.getTable().getField(field)!=null);
+			}
+		}
 		return false;
 	}
 
@@ -118,8 +173,7 @@ public class Record implements Map
 	 */
 	public boolean containsValue(Object arg0)
 	{
-		// TODO Auto-generated method stub
-		return false;
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -129,8 +183,19 @@ public class Record implements Map
 	 */
 	public Set entrySet()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		Map map = new HashMap();
+		Iterator loop = tableRecords.values().iterator();
+		while (loop.hasNext())
+		{
+			TableRecord tr = (TableRecord)loop.next();
+			Iterator fieldloop = tr.getTable().getFields().iterator();
+			while (fieldloop.hasNext())
+			{
+				Field f = (Field)fieldloop.next();
+				map.put(f.getTableName()+"."+f.getFieldName(),tr.getFieldValue(f));
+			}
+		}
+		return Collections.unmodifiableMap(map).entrySet();
 	}
 
 	/**
@@ -140,7 +205,27 @@ public class Record implements Map
 	 */
 	public Object get(Object arg0)
 	{
-		// TODO Auto-generated method stub
+		if (arg0 instanceof Field)
+		{
+			TableRecord table = (TableRecord)tableRecords.get(((Field)arg0).getTableName());
+			if (table!=null)
+			{
+				return table.getFieldValue((Field)arg0);
+			}
+		}
+		else if (arg0 instanceof String)
+		{
+			String field = getFieldName((String)arg0);
+			TableRecord table = getTableRecord((String)arg0);
+			if (table!=null)
+			{
+				Field f =  table.getTable().getField(field);
+				if (f!=null)
+				{
+					return table.getFieldValue(f);
+				}
+			}
+		}
 		return null;
 	}
 
@@ -151,7 +236,6 @@ public class Record implements Map
 	 */
 	public boolean isEmpty()
 	{
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -162,8 +246,19 @@ public class Record implements Map
 	 */
 	public Set keySet()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		Set set = new HashSet();
+		Iterator loop = tableRecords.values().iterator();
+		while (loop.hasNext())
+		{
+			TableRecord tr = (TableRecord)loop.next();
+			Iterator fieldloop = tr.getTable().getFields().iterator();
+			while (fieldloop.hasNext())
+			{
+				Field f = (Field)fieldloop.next();
+				set.add(f.getTableName()+"."+f.getFieldName());
+			}
+		}
+		return set;
 	}
 
 	/**
@@ -203,8 +298,14 @@ public class Record implements Map
 	 */
 	public int size()
 	{
-		// TODO Auto-generated method stub
-		return 0;
+		int sum = 0;
+		Iterator loop = tableRecords.values().iterator();
+		while (loop.hasNext())
+		{
+			TableRecord tr = (TableRecord)loop.next();
+			sum+=tr.getTable().getFields().size();
+		}
+		return sum;
 	}
 
 	/**
@@ -214,7 +315,18 @@ public class Record implements Map
 	 */
 	public Collection values()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		List list = new LinkedList();
+		Iterator loop = tableRecords.values().iterator();
+		while (loop.hasNext())
+		{
+			TableRecord tr = (TableRecord)loop.next();
+			Iterator fieldloop = tr.getTable().getFields().iterator();
+			while (fieldloop.hasNext())
+			{
+				Field f = (Field)fieldloop.next();
+				list.add(tr.getFieldValue(f));
+			}
+		}
+		return Collections.unmodifiableCollection(list);
 	}
 }
