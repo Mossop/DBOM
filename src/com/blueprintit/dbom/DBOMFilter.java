@@ -52,7 +52,7 @@ public class DBOMFilter implements Filter
 	public void init(FilterConfig config) throws ServletException
 	{
 		this.config=config;
-		dbEnv = config.getServletContext().getInitParameter("DBOM.datasource");
+		dbEnv = config.getInitParameter("DBOM.datasource");
 		try
 		{
 			parseConfig();
@@ -85,8 +85,14 @@ public class DBOMFilter implements Filter
 	 */
 	public void parseConfig() throws Exception
 	{
+		String filename = config.getInitParameter("DBOM.config");
+		if (filename==null)
+		{
+			throw new IllegalArgumentException("No config file was specified");
+		}
+		config.getServletContext().log("DBOMFilter: Loading configuration from "+filename);
 		Connection conn = getDbConnection();
-		dbom=(new DBOMSettingsParser()).parse(config.getServletContext().getRealPath(config.getInitParameter("DBOM.config")),conn);
+		dbom=(new DBOMSettingsParser()).parse(config.getServletContext().getRealPath(filename),conn);
 		conn.close();
 	}
 	
@@ -97,22 +103,30 @@ public class DBOMFilter implements Filter
 	 */
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException
 	{
+		Connection conn;
 		try
 		{
-			Connection conn = getDbConnection();
-			Iterator dbloop = dbom.getDatabasePrototypes().entrySet().iterator();
-			while (dbloop.hasNext())
-			{
-				Map.Entry entry = (Map.Entry)dbloop.next();
-				request.setAttribute((String)entry.getKey(),((DatabasePrototype)entry.getValue()).getDatabaseInstance(request,conn));
-			}
-			//request.setAttribute("DBOM",dbom);
-			chain.doFilter(request,response);
-			conn.close();
+			conn = getDbConnection();
 		}
 		catch (Exception e)
 		{
 			throw new ServletException("Error establishing connection to database",e);
+		}
+ 		Iterator dbloop = dbom.getDatabasePrototypes().entrySet().iterator();
+	 	while (dbloop.hasNext())
+		{
+			Map.Entry entry = (Map.Entry)dbloop.next();
+			request.setAttribute((String)entry.getKey(),((DatabasePrototype)entry.getValue()).getDatabaseInstance(request,conn));
+		}
+		//request.setAttribute("DBOM",dbom);
+ 		chain.doFilter(request,response);
+		try
+		{
+			conn.close();
+		}
+		catch (Exception e)
+		{
+			throw new ServletException("Error closing connection to database",e);
 		}
 	}
 
