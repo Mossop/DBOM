@@ -2,6 +2,7 @@ package com.blueprintit.dbom.query;
 
 import java.util.Set;
 
+import com.blueprintit.dbom.Database;
 import com.blueprintit.dbom.RecordSet;
 
 /**
@@ -45,6 +46,11 @@ public class Query
 		{
 			return new Query(options,tables,new AndRestrictionSet(restrictions,newr));
 		}
+	}
+	
+	public Database getDatabase()
+	{
+		return tables.getDatabase();
 	}
 	
 	public RecordSet results()

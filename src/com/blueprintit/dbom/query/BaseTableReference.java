@@ -2,6 +2,7 @@ package com.blueprintit.dbom.query;
 
 import java.util.Set;
 
+import com.blueprintit.dbom.Database;
 import com.blueprintit.dbom.Table;
 
 /**
@@ -16,6 +17,11 @@ public class BaseTableReference implements TableReference
 		this.table=table;
 	}
 
+	public Database getDatabase()
+	{
+		return table.getDatabase();
+	}
+	
 	public Set getPrimaryKeyFields()
 	{
 		return table.getPrimaryKeyFields();

@@ -1,6 +1,11 @@
 package com.blueprintit.dbom;
 
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -31,22 +36,14 @@ public class RecordSet implements Map
 	private Query query;
 	
 	/**
-	 * Initialises the RecordSet.
-	 */
-	private RecordSet()
-	{
-		records = new HashMap();
-		retrieved=false;
-	}
-	
-	/**
 	 * Creates a RecordSet with the given database query as its base.
 	 * 
 	 * @param query
 	 */
 	public RecordSet(Query query)
 	{
-		this();
+		records = new HashMap();
+		retrieved=false;
 		this.query=query;
 	}
 
@@ -100,6 +97,22 @@ public class RecordSet implements Map
 				{
 					loop.remove();
 				}
+			}
+			try
+			{
+				Statement stmt = query.getDatabase().getConnection().createStatement();
+				ResultSet results = stmt.executeQuery(query.getSQL());
+				ResultSetMetaData metadata = results.getMetaData();
+				while (results.next())
+				{
+					Record record = new Record(query.getDatabase(),results,metadata);
+					records.put(record.getPrimaryKey(),record);
+				}
+				results.close();
+				stmt.close();
+			}
+			catch (SQLException e)
+			{
 			}
 			retrieved=true;
 		}
@@ -155,7 +168,7 @@ public class RecordSet implements Map
 	public Set entrySet()
 	{
 		retrieveRecords();
-		return records.entrySet();
+		return Collections.unmodifiableSet(records.entrySet());
 	}
 
 	/**
@@ -191,7 +204,7 @@ public class RecordSet implements Map
 	public Set keySet()
 	{
 		retrieveRecords();
-		return records.keySet();
+		return Collections.unmodifiableSet(records.keySet());
 	}
 
 	/**
@@ -243,6 +256,6 @@ public class RecordSet implements Map
 	public Collection values()
 	{
 		retrieveRecords();
-		return records.values();
+		return Collections.unmodifiableCollection(records.values());
 	}
 }

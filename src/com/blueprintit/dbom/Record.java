@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -23,21 +22,35 @@ public class Record implements Map
 	 */
 	private Map tableRecords;
 	/**
-	 * This holds the primary key for the current record.
+	 * This maps from simple field name to a complex one (i.e. Table.Field)
 	 */
-	private Map primaryKey;
+	private Map fields;
 	
 	/**
 	 * Initialises the record from the given ResultSet.
 	 * 
 	 * @param db The database this result is from.
 	 * @param results The ResultSet holding values for the record.
+	 * @param metadata The ResultSetMetaData holding information about the results.
 	 * @throws SQLException
 	 */
 	Record(Database db, ResultSet results) throws SQLException
 	{
+		this(db,results,results.getMetaData());
+	}
+
+	/**
+	 * Initialises the record from the given ResultSet.
+	 * 
+	 * @param db The database this result is from.
+	 * @param results The ResultSet holding values for the record.
+	 * @param metadata The ResultSetMetaData holding information about the results.
+	 * @throws SQLException
+	 */
+	Record(Database db, ResultSet results, ResultSetMetaData metadata) throws SQLException
+	{
+		fields = new HashMap();
 		tableRecords = new HashMap();
-		ResultSetMetaData metadata = results.getMetaData();
 		for (int loop=0; loop<metadata.getColumnCount(); loop++)
 		{
 			Table tb = db.getTable(metadata.getTableName(loop));
@@ -45,23 +58,36 @@ public class Record implements Map
 			{
 				tableRecords.put(tb,(new TableRecord(tb,results,metadata)).intern());
 			}
-		}
-		primaryKey = new HashMap();
-		Iterator tableLoop = tableRecords.values().iterator();
-		while (tableLoop.hasNext())
-		{
-			primaryKey.putAll(((TableRecord)tableLoop.next()).getPrimaryKey());
+			Iterator fieldloop = tb.getFields().iterator();
+			while (fieldloop.hasNext())
+			{
+				Field f = (Field)fieldloop.next();
+				if (fields.containsKey(f.getFieldName()))
+				{
+					fields.put(f.getFieldName(),null);
+				}
+				else
+				{
+					fields.put(f.getFieldName(),f.getTableName()+"."+f.getFieldName());
+				}
+			}
 		}
 	}
 	
 	/**
-	 * Returns an unmodifiable version of the primary key.
+	 * Returns the primary key.
 	 * 
 	 * @return The primary key.
 	 */
 	public Map getPrimaryKey()
 	{
-		return Collections.unmodifiableMap(primaryKey);
+		Map primaryKey = new HashMap();
+		Iterator tableLoop = tableRecords.values().iterator();
+		while (tableLoop.hasNext())
+		{
+			primaryKey.putAll(((TableRecord)tableLoop.next()).getPrimaryKey());
+		}
+		return primaryKey;
 	}
 	
 	/**
@@ -147,8 +173,7 @@ public class Record implements Map
 	 */
 	public Object put(Object arg0, Object arg1)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -158,8 +183,7 @@ public class Record implements Map
 	 */
 	public void putAll(Map arg0)
 	{
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -169,8 +193,7 @@ public class Record implements Map
 	 */
 	public Object remove(Object arg0)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	/**

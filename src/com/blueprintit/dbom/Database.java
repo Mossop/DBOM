@@ -189,4 +189,12 @@ public class Database implements Map
 		list.add(publicTables);
 		return list;
 	}
+
+	/**
+	 * @return The associated database connection.
+	 */
+	public Connection getConnection()
+	{
+		return dbConnection;
+	}
 }

@@ -1,5 +1,6 @@
 package com.blueprintit.dbom;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -56,6 +57,15 @@ public class Table
 	}
 	
 	/**
+	 * Returns the database that this table is associated with.
+	 * @return The database.
+	 */
+	public Database getDatabase()
+	{
+		return database;
+	}
+	
+	/**
 	 * Returns the request associated with this table.
 	 * 
 	 * @return The request.
@@ -82,6 +92,16 @@ public class Table
 	public Field getField(String name)
 	{
 		return (Field)fields.get(name);
+	}
+	
+	/**
+	 * Returns a collection of the fields that are available on this table.
+	 * 
+	 * @return The collection of fields.
+	 */
+	public Collection getFields()
+	{
+		return fields.values();
 	}
 	
 	/**

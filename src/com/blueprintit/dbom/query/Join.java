@@ -3,6 +3,8 @@ package com.blueprintit.dbom.query;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.blueprintit.dbom.Database;
+
 /**
  * @author Dave
  */
@@ -20,10 +22,22 @@ public class Join implements TableReference
 	
 	public Join(String type, TableReference left, TableReference right, Restriction condition)
 	{
-		this.type=type;
-		this.left=left;
-		this.right=right;
-		this.condition=condition;
+		if (left.getDatabase()==right.getDatabase())
+		{
+			this.type=type;
+			this.left=left;
+			this.right=right;
+			this.condition=condition;
+		}
+		else
+		{
+			throw new IllegalArgumentException();
+		}
+	}
+	
+	public Database getDatabase()
+	{
+		return left.getDatabase();
 	}
 	
 	public Set getPrimaryKeyFields()
