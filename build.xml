@@ -1,0 +1,79 @@
+<project name="DBOM" default="build">
+
+	<property name="is${os.name}" value="true"/>
+
+	<target name="setup" description="Basic target that all must eventually use" depends="Linux,Windows">
+		<echo message="Setting up basic properties"/>
+		<tstamp/>
+		<property name="type" value="webapp"/>
+		<property name="basedir" value="${homedir}/java/${ant.project.name}"/>
+		<property name="sourcedir" value="${basedir}/src"/>
+		<property name="outputdir" value="${basedir}/bin"/>
+		<property name="packagedir" value="${basedir}"/>
+		<property name="docsdir" value="${basedir}/docs/api/"/>
+		<property name="resdir" value="${basedir}/res"/>
+		<property name="libdir" value="${basedir}/lib"/>
+		<path id="classpath">
+			<pathelement location="${outputdir}"/>
+			<fileset dir="${basedir}/../lib/${type}">
+			  <include name="*.jar"/>
+			</fileset>
+			<fileset dir="${libdir}">
+				<include name="**/*.jar"/>
+			</fileset>
+		</path>
+		<echo message="Using ${type} profile"/>
+	</target>
+		
+	<target name="Linux" if="isLinux" description="Sets up linux specific stuff">
+		<echo message="Setting up for Linux"/>
+		<property name="homedir" value="${user.home}"/>
+	</target>
+
+	<target name="Windows" unless="isLinux" description="Sets up windows specific stuff">
+		<echo message="Setting up for Windows"/>
+		<property name="homedir" value="${user.home}/My Documents"/>
+	</target>
+
+	<target name="basefix" depends="setup" description="Fixes crlfs in source files">
+		<fixcrlf srcdir="${sourcedir}" includes="/**/*"/>
+	</target>
+
+	<target name="build" depends="setup" description="Performs the basic build">
+		<mkdir dir="${outputdir}"/>
+		<mkdir dir="${resdir}"/>
+		<javac srcdir="${sourcedir}" includes="**/*.java" destdir="${outputdir}" source="1.4" deprecation="on">
+			<classpath refid="classpath"/>
+		</javac>
+		<delete quiet="true" file="${resdir}/build.properties"/>
+		<echo file="${resdir}/build.properties" append="no">build.date=${DSTAMP}${line.separator}</echo>
+		<echo file="${resdir}/build.properties" append="yes">build.time=${TSTAMP}${line.separator}</echo>
+	</target>
+
+	<target name="package" depends="build" description="Packages up the code">
+		<mkdir dir="${packagedir}"/>
+		<jar jarfile="${packagedir}/${ant.project.name}.jar">
+		  <fileset dir="${outputdir}">
+			  <exclude name="**/CVS"/>
+				<exclude name="**/*~"/>
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="docs" depends="setup" description="Extracts the documentation">
+		<delete dir="${docsdir}"/>
+		<mkdir dir="${docsdir}"/>
+		<javadoc sourcepath="${sourcedir}" destdir="${docsdir}" private="true" use="true" author="true" version="true" windowtitle="${ant.project.name}" packagenames="com.*" additionalparam="-breakiterator -source 1.4">
+			<classpath refid="classpath"/>
+			<link href="http://java.sun.com/j2se/1.4.1/docs/api/"/>
+			<link href="http://java.sun.com/products/servlet/2.3/javadoc/"/>
+		</javadoc>
+	</target>
+
+	<target name="clean" depends="setup">
+		<delete dir="${outputdir}" failonerror="false"/>
+		<delete dir="${docsdir}" failonerror="false"/>
+		<delete file="${bindir}/${ant.project.name}.jar" failonerror="false"/>
+	</target>
+
+</project>
