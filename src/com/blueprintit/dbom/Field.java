@@ -10,9 +10,9 @@ import javax.servlet.ServletRequest;
  */
 public interface Field
 {
-	public String getName();
+	public String getFieldName();
 	
-	public Table getTable();
+	public String getTableName();
 	
 	public Object getValue(TableRecord record, ServletRequest request);
 }

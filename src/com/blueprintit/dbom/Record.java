@@ -4,6 +4,9 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -19,18 +22,31 @@ public class Record implements Map
 	 * This field holds a map to the TableRecords, with a Table as the key.
 	 */
 	private Map tableRecords;
+	private Map primaryKey;
 	
 	Record(Database db, ResultSet results) throws SQLException
 	{
+		tableRecords = new HashMap();
 		ResultSetMetaData metadata = results.getMetaData();
 		for (int loop=0; loop<metadata.getColumnCount(); loop++)
 		{
 			Table tb = db.getTable(metadata.getTableName(loop));
 			if ((tb!=null)&&(!tableRecords.containsKey(tb)))
 			{
-				tableRecords.put(tb,new TableRecord(tb,results,metadata));
+				tableRecords.put(tb,(new TableRecord(tb,results,metadata)).intern());
 			}
 		}
+		primaryKey = new HashMap();
+		Iterator tableLoop = tableRecords.values().iterator();
+		while (tableLoop.hasNext())
+		{
+			primaryKey.putAll(((TableRecord)tableLoop.next()).getPrimaryKey());
+		}
+	}
+	
+	public Map getPrimaryKey()
+	{
+		return Collections.unmodifiableMap(primaryKey);
 	}
 	
 	/*
@@ -40,8 +56,7 @@ public class Record implements Map
 	 */
 	public void clear()
 	{
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException();
 	}
 
 	/*

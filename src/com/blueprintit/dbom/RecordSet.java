@@ -1,6 +1,7 @@
 package com.blueprintit.dbom;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -12,6 +13,15 @@ import java.util.Set;
  */
 public class RecordSet implements Map
 {
+	private Map records;
+	private boolean retrieved;
+	
+	RecordSet()
+	{
+		records = new HashMap();
+		retrieved=false;
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 

@@ -1,5 +1,7 @@
 package com.blueprintit.dbom;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -15,16 +17,18 @@ import javax.servlet.ServletRequest;
 public class Table
 {
 	private Database database;
-	private Set primarykey;
-	private Set fields;
+	private Set primaryKey;
+	private Map fields;
 	private String name;
+	private Map recordCache;
 	
 	public Table(Database db, TablePrototype prototype)
 	{
+		recordCache = new HashMap();
 		this.name=prototype.getName();
 		database=db;
-		fields = new HashSet(prototype.getFields());
-		primarykey = new HashSet(prototype.getPrimaryKeyFields());
+		fields = new HashMap(prototype.getFields());
+		primaryKey = new HashSet(prototype.getPrimaryKeyFields());
 	}
 	
 	ServletRequest getRequest()
@@ -32,14 +36,29 @@ public class Table
 		return database.getRequest();
 	}
 	
-	public Set getPrimaryKey()
+	public Set getPrimaryKeyFields()
 	{
-		return primarykey;
+		return primaryKey;
 	}
 	
-	public Set getFields()
+	public Field getField(String name)
 	{
-		return fields;
+		return (Field)fields.get(name);
+	}
+	
+	TableRecord getInternedRecord(TableRecord base)
+	{
+		if (recordCache.containsKey(base.getPrimaryKey()))
+		{
+			TableRecord record = (TableRecord)recordCache.get(base.getPrimaryKey());
+			record.setInternalValues(base.getInternalValues());
+			return record;
+		}
+		else
+		{
+			recordCache.put(base.getPrimaryKey(),base);
+			return base;
+		}
 	}
 	
 	public RecordSet getRecords()

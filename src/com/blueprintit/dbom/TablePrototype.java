@@ -1,7 +1,9 @@
 package com.blueprintit.dbom;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -12,13 +14,13 @@ import java.util.Set;
 public class TablePrototype
 {
 	private String name;
-	private Set fields;
+	private Map fields;
 	private Set primarykey;
 	
 	public TablePrototype(String name)
 	{
 		this.name=name;
-		fields = new HashSet();
+		fields = new HashMap();
 		primarykey = new HashSet();
 	}
 	
@@ -32,8 +34,8 @@ public class TablePrototype
 		return Collections.unmodifiableSet(primarykey);
 	}
 	
-	public Set getFields()
+	public Map getFields()
 	{
-		return Collections.unmodifiableSet(fields);
+		return Collections.unmodifiableMap(fields);
 	}
 }
