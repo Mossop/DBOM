@@ -18,6 +18,10 @@ public class TablePrototype
 	 */
 	private String name;
 	/**
+	 * The database that this table belongs to.
+	 */
+	private DatabasePrototype database;
+	/**
 	 * A list of the fields that are available on this table. The key is the field name.
 	 */
 	private Map fields;
@@ -31,8 +35,9 @@ public class TablePrototype
 	 * 
 	 * @param name The name of the table that this object describes.
 	 */
-	public TablePrototype(String name)
+	public TablePrototype(DatabasePrototype db, String name)
 	{
+		database=db;
 		this.name=name;
 		fields = new HashMap();
 		primarykey = new HashSet();
@@ -46,12 +51,41 @@ public class TablePrototype
 		return name;
 	}
 	
+	public DatabasePrototype getDatabasePrototype()
+	{
+		return database;
+	}
+	
 	/**
 	 * @return The primary key for this table.
 	 */
 	public Set getPrimaryKeyFields()
 	{
 		return Collections.unmodifiableSet(primarykey);
+	}
+	
+	/**
+	 * Marks the given field name as being part of the primary key.
+	 * 
+	 * @param name The name of the field that already exists on the table.
+	 */
+	public void markAsKeyField(String name)
+	{
+		Object field = fields.get(name);
+		if (field!=null)
+		{
+			primarykey.add(field);
+		}
+	}
+	
+	/**
+	 * Adds a field to this table.
+	 * 
+	 * @param field the Field
+	 */
+	public void addField(Field field)
+	{
+		fields.put(field.getFieldName(),field);
 	}
 	
 	/**

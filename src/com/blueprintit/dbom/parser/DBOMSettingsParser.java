@@ -25,6 +25,7 @@ import org.xml.sax.InputSource;
 import com.blueprintit.dbom.DBOM;
 import com.blueprintit.dbom.DatabasePrototype;
 import com.blueprintit.dbom.TablePrototype;
+import com.blueprintit.dbom.plugins.DefaultTableParser;
 
 /**
  * This class is used to parse the settings file. It creates the database and table prototypes but does very little
@@ -56,6 +57,7 @@ public class DBOMSettingsParser
 		elementParsers = new HashMap();
 		dbParsers = new LinkedList();
 		tableParsers = new LinkedList();
+		addParser(new DefaultTableParser());
 	}
 	
 	/**
@@ -177,7 +179,7 @@ public class DBOMSettingsParser
 				Element element = (Element)nodes.item(loop);
 				if (element.getTagName().equals("Table"))
 				{
-					TablePrototype thisTable = new TablePrototype(element.getAttribute("id"));
+					TablePrototype thisTable = new TablePrototype(dbPrototype,element.getAttribute("id"));
 					parseTableElementPass1(element,db,thisTable);
 					dbPrototype.addTablePrototype(thisTable);
 				}
