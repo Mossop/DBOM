@@ -1,4 +1,4 @@
-<project name="DBOM" default="build">
+<project name="DBOM" default="build" basedir=".">
 
 	<property name="is${os.name}" value="true"/>
 
@@ -6,7 +6,7 @@
 		<echo message="Setting up basic properties"/>
 		<tstamp/>
 		<property name="type" value="webapp"/>
-		<property name="basedir" value="${homedir}/java/${ant.project.name}"/>
+		<!-- <property name="basedir" value="${homedir}/java/${ant.project.name}"/> -->
 		<property name="sourcedir" value="${basedir}/src"/>
 		<property name="outputdir" value="${basedir}/bin"/>
 		<property name="packagedir" value="${basedir}"/>
@@ -73,7 +73,7 @@
 	<target name="clean" depends="setup">
 		<delete dir="${outputdir}" failonerror="false"/>
 		<delete dir="${docsdir}" failonerror="false"/>
-		<delete file="${bindir}/${ant.project.name}.jar" failonerror="false"/>
+		<delete file="${basedir}/${ant.project.name}.jar" failonerror="false"/>
 	</target>
 
 </project>
