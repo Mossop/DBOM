@@ -16,6 +16,11 @@ public class DBOM
 		databases = new HashMap();
 	}
 	
+	public void addDatabase(DatabasePrototype db)
+	{
+		databases.put(db.getId(),db);
+	}
+	
 	public Map getDatabases()
 	{
 		return Collections.unmodifiableMap(databases);

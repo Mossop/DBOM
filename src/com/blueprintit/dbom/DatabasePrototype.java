@@ -15,10 +15,24 @@ import javax.servlet.ServletRequest;
 public class DatabasePrototype
 {
 	private Map tables;
+	private String id;
+	private String catalog;
 	
-	public DatabasePrototype()
+	public DatabasePrototype(String id, String catalog)
 	{
+		this.id=id;
+		this.catalog=catalog;
 		tables = new HashMap();
+	}
+	
+	public String getId()
+	{
+		return id;
+	}
+	
+	public String getCatalog()
+	{
+		return catalog;
 	}
 	
 	public Database getDatabaseInstance(ServletRequest request, Connection conn)
