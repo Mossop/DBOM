@@ -14,7 +14,7 @@ import com.blueprintit.dbom.TablePrototype;
  * 
  * @author Dave
  */
-public interface TableParser
+public interface TableParser extends Parser
 {
 	/**
 	 * This method is the first pass through the table element. It should create any fields as

@@ -5,6 +5,8 @@ import java.io.FileReader;
 import java.io.InputStream;
 import java.io.Reader;
 import java.sql.Connection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -74,7 +76,36 @@ public class DBOMSettingsParser
 			plugins = new LinkedList();
 			elementParsers.put(element,plugins);
 		}
-		plugins.add(plugin);
+		insertParser(plugin,plugins);
+	}
+	
+	private class ParserComparator implements Comparator
+	{
+		/* (non-Javadoc)
+		 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+		 */
+		public int compare(Object arg0, Object arg1)
+		{
+			Parser p1 = (Parser)arg0;
+			Parser p2 = (Parser)arg1;
+			return p1.getPriority()-p2.getPriority();
+		}
+	}
+	
+	/**
+	 * This inserts a parser into a list using the priority level to sort it.
+	 * 
+	 * @param parser The parser
+	 * @param list The list
+	 */
+	private void insertParser(Parser parser, List list)
+	{
+		int newpos = Collections.binarySearch(list,parser,new ParserComparator());
+		if (newpos<0)
+		{
+			newpos=-(newpos+1);
+		}
+		list.add(newpos,parser);
 	}
 	
 	/**
@@ -87,11 +118,11 @@ public class DBOMSettingsParser
 	{
 		if (parser instanceof DatabaseParser)
 		{
-			dbParsers.add(parser);
+			insertParser((Parser)parser,dbParsers);
 		}
 		if (parser instanceof TableParser)
 		{
-			tableParsers.add(parser);
+			insertParser((Parser)parser,tableParsers);
 		}
 		if (parser instanceof ElementParser)
 		{

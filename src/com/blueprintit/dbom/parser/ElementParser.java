@@ -13,7 +13,7 @@ import com.blueprintit.dbom.TablePrototype;
  * 
  * @author Dave
  */
-public interface ElementParser
+public interface ElementParser extends Parser
 {
 	/**
 	 * This method returns the tag names that this parser should be used to parse.

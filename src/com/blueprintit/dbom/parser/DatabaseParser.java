@@ -14,7 +14,7 @@ import com.blueprintit.dbom.DatabasePrototype;
  * 
  * @author Dave
  */
-public interface DatabaseParser
+public interface DatabaseParser extends Parser
 {
 	/**
 	 * This method is the first pass through the database element. It should create any tables as
@@ -25,7 +25,7 @@ public interface DatabaseParser
 	 * @param dbPrototype The DatabasePrototype for the relevant element
 	 */
 	public void parseDatabaseElementPass1(Element settings, Connection db, DatabasePrototype dbPrototype);
-	
+
 	/**
 	 * This method is the second pass through the database element. It should establish any links as
 	 * necessary.
