@@ -55,13 +55,13 @@ public class Record implements Map
 	{
 		fields = new HashMap();
 		tableRecords = new HashMap();
-		for (int loop=0; loop<metadata.getColumnCount(); loop++)
+		for (int loop=1; loop<=metadata.getColumnCount(); loop++)
 		{
 			Table tb = db.getTable(metadata.getTableName(loop));
-			if ((tb!=null)&&(!tableRecords.containsKey(tb)))
+			if ((tb!=null)&&(!tableRecords.containsKey(tb.getName())))
 			{
-				TableRecord rec = new TableRecord(tb,results,metadata);
-				tableRecords.put(tb.getName(),(new TableRecord(tb,results,metadata)).intern());
+				TableRecord rec = (new TableRecord(tb,results,metadata)).intern();
+				tableRecords.put(tb.getName(),rec);
 				Iterator fieldloop = tb.getFields().iterator();
 				while (fieldloop.hasNext())
 				{
@@ -69,6 +69,7 @@ public class Record implements Map
 					if (fields.containsKey(f.getFieldName()))
 					{
 						fields.put(f.getFieldName(),null);
+						System.out.println("Removing reference to "+f.getFieldName());
 					}
 					else
 					{

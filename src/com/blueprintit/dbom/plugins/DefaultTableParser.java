@@ -26,7 +26,7 @@ public class DefaultTableParser implements TableParser
 		try
 		{
 			DatabaseMetaData data = db.getMetaData();
-			ResultSet columns = data.getColumns(db.getCatalog(),null,tablePrototype.getName(),"*");
+			ResultSet columns = data.getColumns(tablePrototype.getDatabasePrototype().getCatalog(),null,tablePrototype.getName(),null);
 			while (columns.next())
 			{
 				tablePrototype.addField(new BuiltInField(tablePrototype,columns.getString(4)));
@@ -36,11 +36,12 @@ public class DefaultTableParser implements TableParser
 			while (keys.next())
 			{
 				tablePrototype.markAsKeyField(keys.getString(4));
-				System.out.println("Marking field "+columns.getString(4)+" as a key field");
+				System.out.println("Marking field "+keys.getString(4)+" as a key field");
 			}
 		}
 		catch (Exception e)
 		{
+			e.printStackTrace();
 		}
 	}
 

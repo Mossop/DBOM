@@ -113,6 +113,7 @@ public class RecordSet implements Map
 			}
 			catch (SQLException e)
 			{
+				e.printStackTrace();
 			}
 			retrieved=true;
 		}

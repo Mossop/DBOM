@@ -41,7 +41,7 @@ public class TableRecord
 	{
 		fieldValues = new HashMap();
 		this.table=table;
-		for (int loop=0; loop<metadata.getColumnCount(); loop++)
+		for (int loop=1; loop<=metadata.getColumnCount(); loop++)
 		{
 			if (table.getName().equals(metadata.getTableName(loop)))
 			{
