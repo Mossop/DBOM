@@ -1,5 +1,6 @@
 package com.blueprintit.dbom;
 
+import java.sql.Connection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,9 +21,9 @@ public class DatabasePrototype
 		tables = new HashMap();
 	}
 	
-	public Database getDatabaseInstance(ServletRequest request)
+	public Database getDatabaseInstance(ServletRequest request, Connection conn)
 	{
-		return new Database(this,request);
+		return new Database(this,conn,request);
 	}
 	
 	public void addTablePrototype(TablePrototype table)

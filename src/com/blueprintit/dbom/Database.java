@@ -1,5 +1,6 @@
 package com.blueprintit.dbom;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -21,10 +22,12 @@ public class Database implements Map
 {
 	private ServletRequest request;
 	private Map publicTables;
+	private Connection dbConnection;
 	
-	Database(DatabasePrototype prototype, ServletRequest request)
+	Database(DatabasePrototype prototype, Connection conn, ServletRequest request)
 	{
 		this.request=request;
+		dbConnection=conn;
 		Map tables = new HashMap();
 		publicTables = Collections.unmodifiableMap(tables);
 		Iterator loop = prototype.getTablePrototypes().values().iterator();
