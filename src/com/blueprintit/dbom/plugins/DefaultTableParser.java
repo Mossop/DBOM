@@ -30,11 +30,13 @@ public class DefaultTableParser implements TableParser
 			while (columns.next())
 			{
 				tablePrototype.addField(new BuiltInField(tablePrototype,columns.getString(4)));
+				System.out.println("Adding field "+columns.getString(4));
 			}
 			ResultSet keys = data.getPrimaryKeys(tablePrototype.getDatabasePrototype().getCatalog(),null,tablePrototype.getName());
 			while (keys.next())
 			{
 				tablePrototype.markAsKeyField(keys.getString(4));
+				System.out.println("Marking field "+columns.getString(4)+" as a key field");
 			}
 		}
 		catch (Exception e)
