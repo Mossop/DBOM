@@ -18,12 +18,22 @@ import java.util.Set;
  */
 public class Record implements Map
 {
-	/*
+	/**
 	 * This field holds a map to the TableRecords, with a Table as the key.
 	 */
 	private Map tableRecords;
+	/**
+	 * This holds the primary key for the current record.
+	 */
 	private Map primaryKey;
 	
+	/**
+	 * Initialises the record from the given ResultSet.
+	 * 
+	 * @param db The database this result is from.
+	 * @param results The ResultSet holding values for the record.
+	 * @throws SQLException
+	 */
 	Record(Database db, ResultSet results) throws SQLException
 	{
 		tableRecords = new HashMap();
@@ -44,13 +54,18 @@ public class Record implements Map
 		}
 	}
 	
+	/**
+	 * Returns an unmodifiable version of the primary key.
+	 * 
+	 * @return The primary key.
+	 */
 	public Map getPrimaryKey()
 	{
 		return Collections.unmodifiableMap(primaryKey);
 	}
 	
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Attempts to clear the RecordSet. This will fail with an UnsupportedOperationException.
 	 * 
 	 * @see java.util.Map#clear()
 	 */
@@ -59,7 +74,7 @@ public class Record implements Map
 		throw new UnsupportedOperationException();
 	}
 
-	/*
+	/**
 	 * (non-Javadoc)
 	 * 
 	 * @see java.util.Map#containsKey(java.lang.Object)
@@ -70,7 +85,7 @@ public class Record implements Map
 		return false;
 	}
 
-	/*
+	/**
 	 * (non-Javadoc)
 	 * 
 	 * @see java.util.Map#containsValue(java.lang.Object)
@@ -81,7 +96,7 @@ public class Record implements Map
 		return false;
 	}
 
-	/*
+	/**
 	 * (non-Javadoc)
 	 * 
 	 * @see java.util.Map#entrySet()
@@ -92,7 +107,7 @@ public class Record implements Map
 		return null;
 	}
 
-	/*
+	/**
 	 * (non-Javadoc)
 	 * 
 	 * @see java.util.Map#get(java.lang.Object)
@@ -103,7 +118,7 @@ public class Record implements Map
 		return null;
 	}
 
-	/*
+	/**
 	 * (non-Javadoc)
 	 * 
 	 * @see java.util.Map#isEmpty()
@@ -114,7 +129,7 @@ public class Record implements Map
 		return false;
 	}
 
-	/*
+	/**
 	 * (non-Javadoc)
 	 * 
 	 * @see java.util.Map#keySet()
@@ -125,7 +140,7 @@ public class Record implements Map
 		return null;
 	}
 
-	/*
+	/**
 	 * (non-Javadoc)
 	 * 
 	 * @see java.util.Map#put(java.lang.Object, java.lang.Object)
@@ -136,7 +151,7 @@ public class Record implements Map
 		return null;
 	}
 
-	/*
+	/**
 	 * (non-Javadoc)
 	 * 
 	 * @see java.util.Map#putAll(java.util.Map)
@@ -147,7 +162,7 @@ public class Record implements Map
 
 	}
 
-	/*
+	/**
 	 * (non-Javadoc)
 	 * 
 	 * @see java.util.Map#remove(java.lang.Object)
@@ -158,7 +173,7 @@ public class Record implements Map
 		return null;
 	}
 
-	/*
+	/**
 	 * (non-Javadoc)
 	 * 
 	 * @see java.util.Map#size()
@@ -169,7 +184,7 @@ public class Record implements Map
 		return 0;
 	}
 
-	/*
+	/**
 	 * (non-Javadoc)
 	 * 
 	 * @see java.util.Map#values()

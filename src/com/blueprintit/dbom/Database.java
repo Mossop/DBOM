@@ -15,15 +15,30 @@ import javax.servlet.ServletRequest;
 /**
  * @author Dave
  * 
- * The Database is the root object of the DBOM. It is made available
- * automatically to webapps as a request object.
+ * The Database is made available automatically to webapps as a request object.
  */
 public class Database implements Map
 {
+	/**
+	 * The request used with this database.
+	 */
 	private ServletRequest request;
+	/**
+	 * An unmodifiable map of the tables. The key is the tables name.
+	 */
 	private Map publicTables;
+	/**
+	 * The database connection this Database should use.
+	 */
 	private Connection dbConnection;
 	
+	/**
+	 * Initialises the database.
+	 * 
+	 * @param prototype The prototype for this database.
+	 * @param conn A database connection to use.
+	 * @param request The ServletRequest to use.
+	 */
 	Database(DatabasePrototype prototype, Connection conn, ServletRequest request)
 	{
 		this.request=request;
@@ -38,18 +53,29 @@ public class Database implements Map
 		}
 	}
 	
+	/**
+	 * Retrieves a table by name.
+	 * 
+	 * @param name The name of a table.
+	 * @return A table or null if there is no table of that name.
+	 */
 	public Table getTable(String name)
 	{
 		return (Table)publicTables.get(name);
 	}
 	
+	/**
+	 * Retrieves the request for this database.
+	 * 
+	 * @return The request.
+	 */
 	ServletRequest getRequest()
 	{
 		return request;
 	}
 	
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Throws an UnsupportedOperationException.
 	 * 
 	 * @see java.util.Map#clear()
 	 */
@@ -58,9 +84,7 @@ public class Database implements Map
 		throw new UnsupportedOperationException();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/**
 	 * @see java.util.Map#containsKey(java.lang.Object)
 	 */
 	public boolean containsKey(Object key)
@@ -72,9 +96,7 @@ public class Database implements Map
 		return false;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/**
 	 * @see java.util.Map#containsValue(java.lang.Object)
 	 */
 	public boolean containsValue(Object value)
@@ -86,9 +108,7 @@ public class Database implements Map
 		return false;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/**
 	 * @see java.util.Map#entrySet()
 	 */
 	public Set entrySet()
@@ -98,9 +118,7 @@ public class Database implements Map
 		return set;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/**
 	 * @see java.util.Map#get(java.lang.Object)
 	 */
 	public Object get(Object key)
@@ -112,9 +130,7 @@ public class Database implements Map
 		return null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/**
 	 * @see java.util.Map#isEmpty()
 	 */
 	public boolean isEmpty()
@@ -122,9 +138,7 @@ public class Database implements Map
 		return false;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/**
 	 * @see java.util.Map#keySet()
 	 */
 	public Set keySet()
@@ -134,9 +148,7 @@ public class Database implements Map
 		return set;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/**
 	 * @see java.util.Map#put(java.lang.Object, java.lang.Object)
 	 */
 	public Object put(Object key, Object value)
@@ -144,9 +156,7 @@ public class Database implements Map
 		throw new UnsupportedOperationException();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/**
 	 * @see java.util.Map#putAll(java.util.Map)
 	 */
 	public void putAll(Map map)
@@ -154,9 +164,7 @@ public class Database implements Map
 		throw new UnsupportedOperationException();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/**
 	 * @see java.util.Map#remove(java.lang.Object)
 	 */
 	public Object remove(Object key)
@@ -164,9 +172,7 @@ public class Database implements Map
 		throw new UnsupportedOperationException();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/**
 	 * @see java.util.Map#size()
 	 */
 	public int size()
@@ -174,9 +180,7 @@ public class Database implements Map
 		return 1;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/**
 	 * @see java.util.Map#values()
 	 */
 	public Collection values()

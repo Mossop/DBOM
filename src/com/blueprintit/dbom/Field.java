@@ -10,9 +10,26 @@ import javax.servlet.ServletRequest;
  */
 public interface Field
 {
+	/**
+	 * Returns the name of the field.
+	 * 
+	 * @return The name
+	 */
 	public String getFieldName();
 	
+	/**
+	 * Returns the name of the table that this field belongs to.
+	 * 
+	 * @return The table name.
+	 */
 	public String getTableName();
 	
+	/**
+	 * Returns the value of the field.
+	 * 
+	 * @param record The TableRecord to get the value for.
+	 * @param request The request.
+	 * @return The field value.
+	 */
 	public Object getValue(TableRecord record, ServletRequest request);
 }

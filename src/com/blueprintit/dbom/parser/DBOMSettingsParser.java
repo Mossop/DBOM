@@ -25,14 +25,30 @@ import com.blueprintit.dbom.DatabasePrototype;
 import com.blueprintit.dbom.TablePrototype;
 
 /**
+ * This class is used to parse the settings file. It creates the database and table prototypes but does very little
+ * else. Everything else should be handled by plugin parsers.
+ * 
  * @author Dave
  */
 public class DBOMSettingsParser
 {
+	/**
+	 * Holds a collection of parsers that are called for each database. Each is a DatabaseParser.
+	 */
 	private List dbParsers;
+	/**
+	 * Holds a collection of parsers that are called for each table. Each is a TableParser.
+	 */
 	private List tableParsers;
+	/**
+	 * Holds a collection of parsers that may be called for custom elements. The key is the tag
+	 * name of an element and the value is an List of ElementParsers.
+	 */
 	private Map elementParsers;
 	
+	/**
+	 * Creates a default parser. Installs the default plugins.
+	 */
 	public DBOMSettingsParser()
 	{
 		elementParsers = new HashMap();
@@ -40,6 +56,12 @@ public class DBOMSettingsParser
 		tableParsers = new LinkedList();
 	}
 	
+	/**
+	 * Used to register an ElementParser into the elementParsers map.
+	 * 
+	 * @param element The name of the element that can be parsed.
+	 * @param plugin The parser.
+	 */
 	private void addElementParser(String element, ElementParser plugin)
 	{
 		List plugins;
@@ -55,6 +77,12 @@ public class DBOMSettingsParser
 		plugins.add(plugin);
 	}
 	
+	/**
+	 * Called to register a custom parser. Detects what type of parser it is and installs it in the relevant
+	 * collections.
+	 * 
+	 * @param parser The parser.
+	 */
 	private void addParser(Object parser)
 	{
 		if (parser instanceof DatabaseParser)
@@ -76,21 +104,38 @@ public class DBOMSettingsParser
 		}
 	}
 
+	/**
+	 * Called to parse a database element. Creates the prototype and does 2 passes through the element.
+	 * 
+	 * @param settings The database element.
+	 * @param db A connection to the database.
+	 * @param dbom
+	 * @throws Exception
+	 */
 	private void parseDatabaseElement(Element settings, Connection db, DBOM dbom) throws Exception
 	{
 		DatabasePrototype thisDb = new DatabasePrototype(settings.getAttribute("id"),settings.getAttribute("catalog"));
 		db.setCatalog(thisDb.getCatalog());
 		parseDatabaseElementPass1(settings,db,thisDb);
 		parseDatabaseElementPass2(settings,db,thisDb);
-		dbom.addDatabase(thisDb);
+		dbom.addDatabasePrototype(thisDb);
 	}
 	
+	/**
+	 * Completes the first pass to parse a database element. Calls parsers as necessary and does the first
+	 * pass through all table elements.
+	 * 
+	 * @param settings The database element.
+	 * @param db A connection to the database.
+	 * @param dbPrototype The prototype for this database.
+	 * @throws Exception
+	 */
 	private void parseDatabaseElementPass1(Element settings, Connection db, DatabasePrototype dbPrototype) throws Exception
 	{
-		Iterator pluginLoop = dbParsers.iterator();
-		while (pluginLoop.hasNext())
+		Iterator parserLoop = dbParsers.iterator();
+		while (parserLoop.hasNext())
 		{
-			((DatabaseParser)pluginLoop.next()).parseDatabaseElementPass1(settings,db,dbPrototype);
+			((DatabaseParser)parserLoop.next()).parseDatabaseElementPass1(settings,db,dbPrototype);
 		}
 		
 		NodeList nodes = settings.getChildNodes();
@@ -107,10 +152,10 @@ public class DBOMSettingsParser
 				}
 				else if (elementParsers.containsKey(element.getTagName()))
 				{
-					pluginLoop = ((List)elementParsers.get(element.getTagName())).iterator();
-					while (pluginLoop.hasNext())
+					parserLoop = ((List)elementParsers.get(element.getTagName())).iterator();
+					while (parserLoop.hasNext())
 					{
-						if (((ElementParser)pluginLoop.next()).parseDatabaseChildElementPass1(element,db,dbPrototype))
+						if (((ElementParser)parserLoop.next()).parseDatabaseChildElementPass1(element,db,dbPrototype))
 						{
 							break;
 						}
@@ -120,12 +165,21 @@ public class DBOMSettingsParser
 		}
 	}
 	
+	/**
+	 * Completes the second pass to parse a database element. Calls parsers as necessary and does the second
+	 * pass through all table elements.
+	 * 
+	 * @param settings The database element.
+	 * @param db A connection to the database.
+	 * @param dbPrototype The prototype for this database.
+	 * @throws Exception
+	 */
 	private void parseDatabaseElementPass2(Element settings, Connection db, DatabasePrototype dbPrototype) throws Exception
 	{
-		Iterator pluginLoop = dbParsers.iterator();
-		while (pluginLoop.hasNext())
+		Iterator parserLoop = dbParsers.iterator();
+		while (parserLoop.hasNext())
 		{
-			((DatabaseParser)pluginLoop.next()).parseDatabaseElementPass2(settings,db,dbPrototype);
+			((DatabaseParser)parserLoop.next()).parseDatabaseElementPass2(settings,db,dbPrototype);
 		}
 		
 		NodeList nodes = settings.getChildNodes();
@@ -141,10 +195,10 @@ public class DBOMSettingsParser
 				}
 				else if (elementParsers.containsKey(element.getTagName()))
 				{
-					pluginLoop = ((List)elementParsers.get(element.getTagName())).iterator();
-					while (pluginLoop.hasNext())
+					parserLoop = ((List)elementParsers.get(element.getTagName())).iterator();
+					while (parserLoop.hasNext())
 					{
-						if (((ElementParser)pluginLoop.next()).parseDatabaseChildElementPass2(element,db,dbPrototype))
+						if (((ElementParser)parserLoop.next()).parseDatabaseChildElementPass2(element,db,dbPrototype))
 						{
 							break;
 						}
@@ -154,12 +208,20 @@ public class DBOMSettingsParser
 		}
 	}
 	
+	/**
+	 * Completes the first pass to parse a table element. Calls parsers as necessary.
+	 * 
+	 * @param settings The table element.
+	 * @param db A connection to the database.
+	 * @param tablePrototype The prototype for this table.
+	 * @throws Exception
+	 */
 	private void parseTableElementPass1(Element settings, Connection db, TablePrototype tablePrototype) throws Exception
 	{
-		Iterator pluginLoop = tableParsers.iterator();
-		while (pluginLoop.hasNext())
+		Iterator parserLoop = tableParsers.iterator();
+		while (parserLoop.hasNext())
 		{
-			((TableParser)pluginLoop.next()).parseTableElementPass1(settings,db,tablePrototype);
+			((TableParser)parserLoop.next()).parseTableElementPass1(settings,db,tablePrototype);
 		}
 		
 		NodeList nodes = settings.getChildNodes();
@@ -170,10 +232,10 @@ public class DBOMSettingsParser
 				Element element = (Element)nodes.item(loop);
 				if (elementParsers.containsKey(element.getTagName()))
 				{
-					pluginLoop = ((List)elementParsers.get(element.getTagName())).iterator();
-					while (pluginLoop.hasNext())
+					parserLoop = ((List)elementParsers.get(element.getTagName())).iterator();
+					while (parserLoop.hasNext())
 					{
-						if (((ElementParser)pluginLoop.next()).parseTableChildElementPass1(element,db,tablePrototype))
+						if (((ElementParser)parserLoop.next()).parseTableChildElementPass1(element,db,tablePrototype))
 						{
 							break;
 						}
@@ -183,12 +245,20 @@ public class DBOMSettingsParser
 		}
 	}
 	
+	/**
+	 * Completes the second pass to parse a table element. Calls parsers as necessary.
+	 * 
+	 * @param settings The table element.
+	 * @param db A connection to the database.
+	 * @param tablePrototype The prototype for this table.
+	 * @throws Exception
+	 */
 	private void parseTableElementPass2(Element settings, Connection db, TablePrototype tablePrototype) throws Exception
 	{
-		Iterator pluginLoop = tableParsers.iterator();
-		while (pluginLoop.hasNext())
+		Iterator parserLoop = tableParsers.iterator();
+		while (parserLoop.hasNext())
 		{
-			((TableParser)pluginLoop.next()).parseTableElementPass2(settings,db,tablePrototype);
+			((TableParser)parserLoop.next()).parseTableElementPass2(settings,db,tablePrototype);
 		}
 		
 		NodeList nodes = settings.getChildNodes();
@@ -199,10 +269,10 @@ public class DBOMSettingsParser
 				Element element = (Element)nodes.item(loop);
 				if (elementParsers.containsKey(element.getTagName()))
 				{
-					pluginLoop = ((List)elementParsers.get(element.getTagName())).iterator();
-					while (pluginLoop.hasNext())
+					parserLoop = ((List)elementParsers.get(element.getTagName())).iterator();
+					while (parserLoop.hasNext())
 					{
-						if (((ElementParser)pluginLoop.next()).parseTableChildElementPass2(element,db,tablePrototype))
+						if (((ElementParser)parserLoop.next()).parseTableChildElementPass2(element,db,tablePrototype))
 						{
 							break;
 						}
@@ -212,6 +282,14 @@ public class DBOMSettingsParser
 		}
 	}
 	
+	/**
+	 * The base method for parsing the settings file.
+	 * 
+	 * @param settings The document that has been parsed out of an xml file.
+	 * @param db A connection to the database server.
+	 * @return The DBOM generated from the settings.
+	 * @throws Exception
+	 */
 	private DBOM parse(Document settings, Connection db) throws Exception
 	{
 		DBOM dbom = new DBOM();
@@ -235,6 +313,14 @@ public class DBOMSettingsParser
 		return dbom;
 	}
 	
+	/**
+	 * Parses an InputSource.
+	 * 
+	 * @param in The InputSource.
+	 * @param db A connection to the database server.
+	 * @return The generated DBOM.
+	 * @throws Exception
+	 */
 	public DBOM parse(InputSource in, Connection db) throws Exception
 	{
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -243,21 +329,53 @@ public class DBOMSettingsParser
 		return parse(settings,db);
 	}
 	
+	/**
+	 * Parses a Reader.
+	 * 
+	 * @param reader The Reader.
+	 * @param db A connection to the database server.
+	 * @return The generated DBOM.
+	 * @throws Exception
+	 */
 	public DBOM parse(Reader reader, Connection db) throws Exception
 	{
 		return parse(new InputSource(reader),db);
 	}
 	
+	/**
+	 * Parses an InputStream.
+	 * 
+	 * @param in The InputStream.
+	 * @param db A connection to the database server.
+	 * @return The generated DBOM.
+	 * @throws Exception
+	 */
 	public DBOM parse(InputStream in, Connection db) throws Exception
 	{
 		return parse(new InputSource(in),db);
 	}
 	
+	/**
+	 * Parses a File.
+	 * 
+	 * @param file The File.
+	 * @param db A connection to the database server.
+	 * @return The generated DBOM.
+	 * @throws Exception
+	 */
 	public DBOM parse(File file, Connection db) throws Exception
 	{
 		return parse(new FileReader(file),db);
 	}
 	
+	/**
+	 * Parses a File.
+	 * 
+	 * @param filename The filename.
+	 * @param db A connection to the database server.
+	 * @return The generated DBOM.
+	 * @throws Exception
+	 */
 	public DBOM parse(String filename, Connection db) throws Exception
 	{
 		return parse(new FileReader(filename),db);

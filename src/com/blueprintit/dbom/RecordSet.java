@@ -13,38 +13,110 @@ import java.util.Set;
  */
 public class RecordSet implements Map
 {
+	/**
+	 * The records held. The key is the primary key of the record. If the value is null then the record is
+	 * known not exist in the database.
+	 */
 	private Map records;
+	/**
+	 * Indicates whether a full retrieve has been done on the RecordSet.
+	 */
 	private boolean retrieved;
+	private Set primarykey;
 	
+	/**
+	 * Initialises the RecordSet.
+	 */
 	RecordSet()
 	{
 		records = new HashMap();
 		retrieved=false;
 	}
 	
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Converts the object into a compatible index for this RecordSet.
+	 * 
+	 * @param ojb The object used to attempt to index the RecordSet.
+	 * @return The obj as converted to a primary key, or null if no conversion was possible.
+	 */
+	private Map makeKey(Object obj)
+	{
+		if (obj instanceof Map)
+		{
+			if (((Map)obj).keySet().equals(primarykey))
+			{
+				return (Map)obj;
+			}
+			else
+			{
+				return null;
+			}
+		}
+		else
+		{
+			if (primarykey.size()==1)
+			{
+				Map key = new HashMap();
+				key.put(primarykey.iterator().next(),obj);
+				return key;
+			}
+			else
+			{
+				return null;
+			}
+		}
+	}
+	
+	/**
+	 * Attempts to retrieve all the remaining records from the database.
+	 */
+	private void retrieveRecords()
+	{
+		if (!retrieved)
+		{
+			retrieved=true;
+		}
+	}
+	
+	/**
+	 * Attempts to clear the RecordsSet. Will fail with an UnsupportedOperationException.
 	 * 
 	 * @see java.util.Map#clear()
 	 */
 	public void clear()
 	{
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException();
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Attempts to determine if a particular record exists in the RecordSet.
+	 * First checks the cache then attempts to retrieve it if nothing was found.
 	 * 
+	 * @param okey The index of the record.
 	 * @see java.util.Map#containsKey(java.lang.Object)
 	 */
-	public boolean containsKey(Object arg0)
+	public boolean containsKey(Object okey)
 	{
-		// TODO Auto-generated method stub
+		Map key = makeKey(okey);
+		if (key==null)
+			return false;
+		if (records.containsKey(key))
+		{
+			if (records.get(key)!=null)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		if (get(key)!=null)
+			return true;
 		return false;
 	}
 
-	/*
+	/**
 	 * (non-Javadoc)
 	 * 
 	 * @see java.util.Map#containsValue(java.lang.Object)
@@ -55,7 +127,7 @@ public class RecordSet implements Map
 		return false;
 	}
 
-	/*
+	/**
 	 * (non-Javadoc)
 	 * 
 	 * @see java.util.Map#entrySet()
@@ -66,7 +138,7 @@ public class RecordSet implements Map
 		return null;
 	}
 
-	/*
+	/**
 	 * (non-Javadoc)
 	 * 
 	 * @see java.util.Map#get(java.lang.Object)
@@ -77,7 +149,7 @@ public class RecordSet implements Map
 		return null;
 	}
 
-	/*
+	/**
 	 * (non-Javadoc)
 	 * 
 	 * @see java.util.Map#isEmpty()
@@ -88,7 +160,7 @@ public class RecordSet implements Map
 		return false;
 	}
 
-	/*
+	/**
 	 * (non-Javadoc)
 	 * 
 	 * @see java.util.Map#keySet()
@@ -99,7 +171,7 @@ public class RecordSet implements Map
 		return null;
 	}
 
-	/*
+	/**
 	 * (non-Javadoc)
 	 * 
 	 * @see java.util.Map#put(java.lang.Object, java.lang.Object)
@@ -110,7 +182,7 @@ public class RecordSet implements Map
 		return null;
 	}
 
-	/*
+	/**
 	 * (non-Javadoc)
 	 * 
 	 * @see java.util.Map#putAll(java.util.Map)
@@ -121,7 +193,7 @@ public class RecordSet implements Map
 
 	}
 
-	/*
+	/**
 	 * (non-Javadoc)
 	 * 
 	 * @see java.util.Map#remove(java.lang.Object)
@@ -132,7 +204,7 @@ public class RecordSet implements Map
 		return null;
 	}
 
-	/*
+	/**
 	 * (non-Javadoc)
 	 * 
 	 * @see java.util.Map#size()
@@ -143,7 +215,7 @@ public class RecordSet implements Map
 		return 0;
 	}
 
-	/*
+	/**
 	 * (non-Javadoc)
 	 * 
 	 * @see java.util.Map#values()
