@@ -6,10 +6,12 @@ import java.util.Set;
 
 /**
  * @author Dave
+ * 
+ * A RecordSet constitutes the result of a query on the database. It is made up of a number of
+ * Records mapped to a primary key for the record.
  */
 public class RecordSet implements Map
 {
-
 	/*
 	 * (non-Javadoc)
 	 * 

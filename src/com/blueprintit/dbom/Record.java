@@ -7,11 +7,15 @@ import java.util.Set;
 /**
  * @author Dave
  * 
- * The Database is the root object of the DBOM. It is made available
- * automatically to webapps as a request object.
+ * A Record is a single result from a query. It is made up of a number of TableRecords, one for each Table
+ * that included results in the query. The TableRecords are generally not used by the end user however.
  */
-public class Database implements Map
+public class Record implements Map
 {
+	/*
+	 * This field holds a map to the TableRecords, with a Table as the key.
+	 */
+	private Map tableRecords;
 	/*
 	 * (non-Javadoc)
 	 * 
