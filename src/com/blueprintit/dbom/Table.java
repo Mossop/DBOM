@@ -7,6 +7,9 @@ import java.util.HashSet;
 
 import javax.servlet.ServletRequest;
 
+import com.blueprintit.dbom.query.BaseTableReference;
+import com.blueprintit.dbom.query.Query;
+
 /**
  * @author Dave
  * 
@@ -111,7 +114,7 @@ public class Table
 	 */
 	public RecordSet getRecords()
 	{
-		return null;
+		return (new Query(new BaseTableReference(this))).results();
 	}
 	
 	/**

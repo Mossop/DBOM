@@ -1,5 +1,7 @@
 package com.blueprintit.dbom.query;
 
+import java.util.Set;
+
 import com.blueprintit.dbom.RecordSet;
 
 /**
@@ -26,6 +28,11 @@ public class Query
 		this.options=options;
 		tables=ref;
 		restrictions=rest;
+	}
+	
+	public Set getPrimaryKeyFields()
+	{
+		return tables.getPrimaryKeyFields();
 	}
 	
 	public Query getSubset(Restriction newr)

@@ -1,5 +1,8 @@
 package com.blueprintit.dbom.query;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * @author Dave
  */
@@ -21,6 +24,14 @@ public class Join implements TableReference
 		this.left=left;
 		this.right=right;
 		this.condition=condition;
+	}
+	
+	public Set getPrimaryKeyFields()
+	{
+		Set key = new HashSet();
+		key.addAll(left.getPrimaryKeyFields());
+		key.addAll(right.getPrimaryKeyFields());
+		return key;
 	}
 	
 	public String getSQL()

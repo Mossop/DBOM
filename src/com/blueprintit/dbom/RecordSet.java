@@ -2,6 +2,7 @@ package com.blueprintit.dbom;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,24 +25,29 @@ public class RecordSet implements Map
 	 * Indicates whether a full retrieve has been done on the RecordSet.
 	 */
 	private boolean retrieved;
-	private Set primarykey;
+	/**
+	 * The query that is used to retrieve records from the database.
+	 */
+	private Query query;
 	
 	/**
 	 * Initialises the RecordSet.
 	 */
-	RecordSet()
+	private RecordSet()
 	{
 		records = new HashMap();
 		retrieved=false;
 	}
 	
 	/**
+	 * Creates a RecordSet with the given database query as its base.
+	 * 
 	 * @param query
 	 */
 	public RecordSet(Query query)
 	{
-		
-		// TODO Auto-generated constructor stub
+		this();
+		this.query=query;
 	}
 
 	/**
@@ -52,6 +58,7 @@ public class RecordSet implements Map
 	 */
 	private Map makeKey(Object obj)
 	{
+		Set primarykey = query.getPrimaryKeyFields();
 		if (obj instanceof Map)
 		{
 			if (((Map)obj).keySet().equals(primarykey))
@@ -85,6 +92,15 @@ public class RecordSet implements Map
 	{
 		if (!retrieved)
 		{
+			Iterator loop = records.entrySet().iterator();
+			while (loop.hasNext())
+			{
+				Map.Entry entry = (Map.Entry)loop.next();
+				if (entry.getValue()==null)
+				{
+					loop.remove();
+				}
+			}
 			retrieved=true;
 		}
 	}
@@ -101,7 +117,6 @@ public class RecordSet implements Map
 
 	/**
 	 * Attempts to determine if a particular record exists in the RecordSet.
-	 * First checks the cache then attempts to retrieve it if nothing was found.
 	 * 
 	 * @param okey The index of the record.
 	 * @see java.util.Map#containsKey(java.lang.Object)
@@ -111,20 +126,15 @@ public class RecordSet implements Map
 		Map key = makeKey(okey);
 		if (key==null)
 			return false;
+		retrieveRecords();
 		if (records.containsKey(key))
 		{
-			if (records.get(key)!=null)
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-		if (get(key)!=null)
 			return true;
-		return false;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	/**
@@ -134,8 +144,7 @@ public class RecordSet implements Map
 	 */
 	public boolean containsValue(Object arg0)
 	{
-		// TODO Auto-generated method stub
-		return false;
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -145,8 +154,8 @@ public class RecordSet implements Map
 	 */
 	public Set entrySet()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		retrieveRecords();
+		return records.entrySet();
 	}
 
 	/**
@@ -154,10 +163,13 @@ public class RecordSet implements Map
 	 * 
 	 * @see java.util.Map#get(java.lang.Object)
 	 */
-	public Object get(Object arg0)
+	public Object get(Object okey)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		Map key = makeKey(okey);
+		if (key==null)
+			return null;
+		retrieveRecords();
+		return records.get(key);
 	}
 
 	/**
@@ -167,8 +179,8 @@ public class RecordSet implements Map
 	 */
 	public boolean isEmpty()
 	{
-		// TODO Auto-generated method stub
-		return false;
+		retrieveRecords();
+		return records.isEmpty();
 	}
 
 	/**
@@ -178,8 +190,8 @@ public class RecordSet implements Map
 	 */
 	public Set keySet()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		retrieveRecords();
+		return records.keySet();
 	}
 
 	/**
@@ -189,8 +201,7 @@ public class RecordSet implements Map
 	 */
 	public Object put(Object arg0, Object arg1)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -200,8 +211,7 @@ public class RecordSet implements Map
 	 */
 	public void putAll(Map arg0)
 	{
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -211,8 +221,7 @@ public class RecordSet implements Map
 	 */
 	public Object remove(Object arg0)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -222,8 +231,8 @@ public class RecordSet implements Map
 	 */
 	public int size()
 	{
-		// TODO Auto-generated method stub
-		return 0;
+		retrieveRecords();
+		return records.size();
 	}
 
 	/**
@@ -233,7 +242,7 @@ public class RecordSet implements Map
 	 */
 	public Collection values()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		retrieveRecords();
+		return records.values();
 	}
 }
