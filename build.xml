@@ -15,7 +15,7 @@
 		<property name="libdir" value="${basedir}/lib"/>
 		<path id="classpath">
 			<pathelement location="${outputdir}"/>
-			<fileset dir="${basedir}/../lib/${type}">
+			<fileset dir="${homedir}/java/lib/${type}">
 			  <include name="*.jar"/>
 			</fileset>
 			<fileset dir="${libdir}">
