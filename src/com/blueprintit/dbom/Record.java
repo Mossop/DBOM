@@ -1,5 +1,8 @@
 package com.blueprintit.dbom;
 
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -16,6 +19,20 @@ public class Record implements Map
 	 * This field holds a map to the TableRecords, with a Table as the key.
 	 */
 	private Map tableRecords;
+	
+	Record(Database db, ResultSet results) throws SQLException
+	{
+		ResultSetMetaData metadata = results.getMetaData();
+		for (int loop=0; loop<metadata.getColumnCount(); loop++)
+		{
+			Table tb = db.getTable(metadata.getTableName(loop));
+			if ((tb!=null)&&(!tableRecords.containsKey(tb)))
+			{
+				tableRecords.put(tb,new TableRecord(tb,results,metadata));
+			}
+		}
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 

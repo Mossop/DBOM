@@ -1,6 +1,9 @@
 package com.blueprintit.dbom;
 
 import java.util.Set;
+import java.util.HashSet;
+
+import javax.servlet.ServletRequest;
 
 /**
  * @author Dave
@@ -16,10 +19,17 @@ public class Table
 	private Set fields;
 	private String name;
 	
-	public Table(Database db, String name)
+	public Table(Database db, TablePrototype prototype)
 	{
-		this.name=name;
+		this.name=prototype.getName();
 		database=db;
+		fields = new HashSet(prototype.getFields());
+		primarykey = new HashSet(prototype.getPrimaryKeyFields());
+	}
+	
+	ServletRequest getRequest()
+	{
+		return database.getRequest();
 	}
 	
 	public Set getPrimaryKey()

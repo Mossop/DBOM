@@ -1,8 +1,11 @@
 package com.blueprintit.dbom;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.Iterator;
+import javax.servlet.ServletRequest;
 
 /**
  * @author Dave
@@ -12,6 +15,31 @@ import java.util.Set;
  */
 public class Database implements Map
 {
+	private ServletRequest request;
+	private Map tables;
+	
+	Database(DatabasePrototype prototype, ServletRequest request)
+	{
+		this.request=request;
+		tables = new HashMap();
+		Iterator loop = prototype.getTablePrototypes().values().iterator();
+		while (loop.hasNext())
+		{
+			Table newtable = new Table(this, (TablePrototype)loop.next());
+			tables.put(newtable.getName(),newtable);
+		}
+	}
+	
+	public Table getTable(String name)
+	{
+		return (Table)tables.get(name);
+	}
+	
+	ServletRequest getRequest()
+	{
+		return request;
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
